@@ -1,14 +1,16 @@
+require("dotenv").config()
 const express = require("express")
 const app = express()
 const mongoose = require('mongoose')
 const cors = require("cors")
 const cookieParser = require("cookie-parser")
-require("dotenv").config()
+const {OtpRouter} = require("./Routes/OtpRoutes")
 
 
 app.use(cors())
 app.use(express.json())
 app.use(cookieParser())
+app.use("/api", OtpRouter)
 
 
 

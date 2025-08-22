@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-
+const validator = require("validator")
 const VerifiedMailSchema = mongoose.Schema({
     mail : {
         type : String,

@@ -5,7 +5,7 @@ const otpSchema = mongoose.Schema({
     otp : {
         type : String,
         required : true,
-        minLength : 6,
+        minlength : 6,
         trim : true
     },
     mail : {
@@ -21,8 +21,9 @@ const otpSchema = mongoose.Schema({
         }
     },
     createdAt : {
-        type : String,
-        expires : 60 * 2
+        type : Date,
+        default : Date.now,
+        expires : 120
     }
 })
 
