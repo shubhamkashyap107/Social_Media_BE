@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const validator = require("validator")
 
-const otpSchema = mongoose.Schema({
+const otpSchema = new mongoose.Schema({
     otp : {
         type : String,
         required : true,

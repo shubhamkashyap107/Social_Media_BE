@@ -14,7 +14,7 @@ const VerifiedMailSchema = mongoose.Schema({
             }
         }
     }
-})
+}, { timestamps: true })
 
 const VerfiedMail = mongoose.model("verified-mail", VerifiedMailSchema)
 
