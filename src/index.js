@@ -6,6 +6,7 @@ const cors = require("cors")
 const cookieParser = require("cookie-parser")
 const {OtpRouter} = require("./Routes/OtpRoutes")
 const {AuthRouter} = require("./Routes/AuthRoutes")
+const {PostRouter} = require("./Routes/PostRoutes")
 
 
 app.use(cors())
@@ -13,6 +14,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use("/api", OtpRouter)
 app.use("/api", AuthRouter)
+app.use("/api", PostRouter)
 
 
 

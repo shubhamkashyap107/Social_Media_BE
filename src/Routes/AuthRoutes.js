@@ -52,7 +52,7 @@ router.post("/auth/signin", async(req, res) => {
                 {username},
                 {mail}
             ]
-        })
+        }).populate("posts")
         if(!foundUser)
         {
             throw new Error("User does not exist")
@@ -63,7 +63,7 @@ router.post("/auth/signin", async(req, res) => {
             throw new Error("Invalid Credentials")
         }
         const token = jwt.sign({_id : foundUser._id}, process.env.JWT_SECRET, {expiresIn : "1d"})
-        res.cookie("jwt-token", token)
+        res.cookie("token", token)
         res.status(200).json({msg : "User logged in", data : {
             firstName : foundUser.firstName,
             lastName : foundUser.lastName,
@@ -87,7 +87,7 @@ router.post("/auth/signin", async(req, res) => {
 })
 
 router.post("/auth/logout", async(req, res) => {
-    res.status(200).cookie("jwt-token", null).json({"msg" : "User logged Out"})
+    res.status(200).cookie("token", null).json({"msg" : "User logged Out"})
 })
 
 
