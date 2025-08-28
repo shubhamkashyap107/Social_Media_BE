@@ -21,8 +21,6 @@ router.post("/posts/create", isLoggedIn, async(req, res) => {
     }
 })
 
-
-
 router.get("/posts", isLoggedIn, async(req, res) => {
     try {
         const allPosts = await Post.find({author : req.user._id})
@@ -52,7 +50,6 @@ router.get("/posts/:id", isLoggedIn, isAuthor, async(req, res) => {
     }
 })
 
-
 router.delete("/posts/:id", isLoggedIn, isAuthor, async(req, res) => {
     try {
         const{id} = req.params
@@ -63,18 +60,22 @@ router.delete("/posts/:id", isLoggedIn, isAuthor, async(req, res) => {
     }
 })
 
-
 router.patch("/posts/:id", isLoggedIn, isAuthor, async(req , res) => {
     try {
         const{id} = req.params
         const{caption, location} = req.body
+        const updatedPost = await Post.findByIdAndUpdate(id, {caption, location}, {returnDocument:"after"})
+        if(!updatedPost)
+        {
+            throw new Error("Post not found")
+        }
 
-        Post.updateOne({})
+        res.status(200).json({msg : "done", data : updatedPost})
     } catch (error) {
-        
+        res.status(400).json({msg : error.message})
     }
 })
-
+ 
 
 module.exports = {
     PostRouter : router
