@@ -12,6 +12,7 @@ router.post("/follow-requests/:toUserId", isLoggedIn, async(req, res) => {
         {
             throw new Error("Invalid Operation")
         }
+        c
 
         const foundreq = await FollowRequest.findOne({fromUserId :  req.user._id, toUserId})
 
@@ -28,6 +29,10 @@ router.post("/follow-requests/:toUserId", isLoggedIn, async(req, res) => {
         }
 
         const foundUser = await User.findOne({_id : toUserId})
+        if (foundUser.blocked.some(id => id.equals(req.user._id))) {
+            throw new Error("Invalid Operation");
+        }
+
         if(!foundUser)
         {
             throw new Error("User does not exists")
@@ -98,8 +103,70 @@ router.patch("/follow-requests/review/:id/:status", isLoggedIn, async(req, res) 
 
 
 
+router.patch("/follow-requests/block/:userId", isLoggedIn, async(req, res) => {
+    try {
+        const{userId} = req.params
+        if (req.user.blocked.some(id => id.toString() === userId)) {
+            throw new Error("User already blocked");
+        }
+
+        const foundUser = await User.findById(userId)
+        if (foundUser.blocked.some(id => id.toString() === req.user._id.toString())) {
+            throw new Error("Invalid Operation");
+        }
+
+        req.user.blocked.push(foundUser._id)
+
+        //blocked user
+        const filteredFollowers = foundUser.followers.filter((item) => {
+            return item.toString() != req.user._id.toString()
+        })
+        foundUser.followers = filteredFollowers
+
+        const filteredFollowing = foundUser.following.filter((item) => {
+            return item.toString() != req.user._id.toString()
+
+        })
+        foundUser.following = filteredFollowing
+
+        await foundUser.save()
+
+        //blocker
+        const filteredFollowers2 = req.user.followers.filter((item) => {
+            return item.toString() != userId
+
+        })
+        req.user.followers = filteredFollowers2
+
+        const filteredFollowing2 = req.user.following.filter((item) => {
+            return item.toString() != userId
+
+        })
+        req.user.following = filteredFollowing2
+        await req.user.save()
+
+        res.status(200).json({msg : `User ${foundUser.username} blocked!`})
+    } catch (error) {
+        res.status(400).json({error : error.message})
+    }
+})
 
 
+
+
+router.patch("/follow-requests/unblock/:userId", isLoggedIn, async(req, res) => {
+    try {
+        const{userId} = req.params
+        const filteredBlockedUsers = req.user.blocked.filter(
+        (item) => item.toString() !== userId
+        );
+        req.user.blocked = filteredBlockedUsers
+        req.user.save()
+        res.status(200).json({msg : "done"})
+    } catch (error) {
+        res.status(400).json({error : error.message})
+    }
+})
 
 
 
