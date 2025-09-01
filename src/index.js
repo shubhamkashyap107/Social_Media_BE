@@ -8,6 +8,7 @@ const {OtpRouter} = require("./Routes/OtpRoutes")
 const {AuthRouter} = require("./Routes/AuthRoutes")
 const {PostRouter} = require("./Routes/PostRoutes")
 const {FollowReqRouter} = require("./Routes/FollowReqRoutes")
+const {CommentRouter} = require("./Routes/CommentsRouter")
 
 
 app.use(cors())
@@ -17,6 +18,7 @@ app.use("/api", OtpRouter)
 app.use("/api", AuthRouter)
 app.use("/api", PostRouter)
 app.use("/api", FollowReqRouter)
+app.use("/api", CommentRouter)
 
 
 
