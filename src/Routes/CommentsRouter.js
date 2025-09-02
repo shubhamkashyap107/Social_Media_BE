@@ -21,7 +21,7 @@ router.post("/comments/:postId", isLoggedIn, async(req, res) => {
             {
                 // console.log(foundPost)
                 const newComment = await Comment.create({author : req.user._id, text })
-                foundPost.comments.push(newComment)
+                foundPost.comments.push(newComment._id)
                 foundPost.save()
             }
             else
@@ -32,7 +32,7 @@ router.post("/comments/:postId", isLoggedIn, async(req, res) => {
         else
         {
             const newComment = await Comment.create({author : req.user._id, text })
-            foundPost.comments.push(newComment)
+            foundPost.comments.push(newComment._id)
             foundPost.save()
         }
 
@@ -43,6 +43,52 @@ router.post("/comments/:postId", isLoggedIn, async(req, res) => {
 })
 
 
+
+router.post("/comments/:postId/:commentId/like", isLoggedIn, async(req, res) => {
+    try {
+       const{postId, commentId} = req.params
+       const foundPost = await Post.findById(postId)
+       const foundComment = await Comment.findById(commentId)
+    
+       if(!foundPost || !foundComment)
+       {
+        throw new Error("Invalid Operation")
+       }
+
+       if(foundComment.likes.some(item => item.toString() == req.user._id.toString()))
+       {
+        throw new Error("Cannot like a comment more than once")
+       }
+
+       if(foundPost.comments.some((item) => {return item.toString() === commentId.toString()}))
+       {
+            if(foundPost.author.isPrivate)
+            {
+                if(foundPost.followers.some(item => item.toString() == req.user._id))
+                {
+                    foundComment.likes.push(req.user._id)
+                    await foundComment.save()
+                }
+                else
+                {
+                    throw new Error("Invalid Operation / Not following the user")
+                }
+            }
+            else
+            {
+                foundComment.likes.push(req.user._id)
+                await foundComment.save()
+            }
+       }
+       else
+       {
+        throw new Error("Invalid Operation")
+       }
+       res.status(201).json({msg : "done"})
+    } catch (error) {
+        res.status(400).json({error : error.message})
+    }
+})
 
 
 
