@@ -4,7 +4,8 @@ const validator = require("validator")
 const { VerfiedMail } = require("../Models/VerifiedMail")
 const { User } = require("../Models/User")
 const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken") 
+const jwt = require("jsonwebtoken")
+const{isLoggedIn} = require("../Middlewares/IsLoggedIn")
 
 router.post("/auth/signup", async(req, res) => {
     try {
@@ -52,7 +53,15 @@ router.post("/auth/signin", async(req, res) => {
                 {username},
                 {mail}
             ]
-        }).populate("posts")
+        }).populate({
+            path : "posts",
+            populate : [
+                { path : "comments"},
+               { path : "likes"},
+            ]
+        })
+
+        console.log(foundUser)
         if(!foundUser)
         {
             throw new Error("User does not exist")
@@ -90,6 +99,14 @@ router.post("/auth/logout", async(req, res) => {
     res.status(200).cookie("token", null).json({"msg" : "User logged Out"})
 })
 
+
+router.get("/auth/get-user-data", isLoggedIn, async(req, res) => {
+    try {
+        res.status(200).json({data : req.user})
+    } catch (error) {
+        res.status(400).json({error : error.message})
+    }
+})
 
 
 

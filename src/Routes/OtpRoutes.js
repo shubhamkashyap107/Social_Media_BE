@@ -24,7 +24,7 @@ function generateOTP()
 
 
 
-router.post("/otp/send-otp", otpLimiter , async(req, res) => {
+router.post("/otp/send-otp" , async(req, res) => {
 
     try {        
         const {email} = req.body
