@@ -9,6 +9,7 @@ const {AuthRouter} = require("./Routes/AuthRoutes")
 const {PostRouter} = require("./Routes/PostRoutes")
 const {FollowReqRouter} = require("./Routes/FollowReqRoutes")
 const {CommentRouter} = require("./Routes/CommentsRouter")
+const {ProfileRouter} = require("./Routes/ProfileRouter")
 
 app.set("trust proxy", 1)
 app.use(cors(
@@ -17,13 +18,16 @@ app.use(cors(
         credentials : true
     }
 ))
-app.use(express.json())
+// app.use(express.json())
 app.use(cookieParser())
+app.use(express.json({ limit: "30mb" }));
+app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use("/api", OtpRouter)
 app.use("/api", AuthRouter)
 app.use("/api", PostRouter)
 app.use("/api", FollowReqRouter)
 app.use("/api", CommentRouter)
+app.use("/api", ProfileRouter)
 
 
 

@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema({
         required : true,
         trim : true,
         unique : true,
+        immutable : true,
         validate : function(val)
         {
             const isEmail = validator.isEmail(val)
@@ -66,6 +67,7 @@ const userSchema = new mongoose.Schema({
     dateOfBirth : {
         type : String,
         required : true,
+        immutable : true,
         validate : function(val)
         {
             const isDate = validator.isDate(val)
@@ -83,6 +85,7 @@ const userSchema = new mongoose.Schema({
     gender : {
         type : String,
         required : true,
+        immutable : true,
         enum : {
             values : ["male", "female", "others"],
             message : "{VALUE} is not a valid type for Gender"

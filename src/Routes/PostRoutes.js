@@ -8,7 +8,7 @@ const { isAuthor } = require("../Middlewares/IsAuthor")
 router.post("/posts/create", isLoggedIn, async(req, res) => {
     try {
         const{caption, location, media} = req.body
-        if(!media)
+        if(!media.length)
         {
             throw new Error("Posts must contain atleast one media file")
         }
