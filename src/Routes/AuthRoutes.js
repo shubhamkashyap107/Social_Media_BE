@@ -61,7 +61,7 @@ router.post("/auth/signin", async(req, res) => {
             ]
         })
 
-        console.log(foundUser)
+        // console.log(foundUser)
         if(!foundUser)
         {
             throw new Error("User does not exist")
@@ -103,6 +103,33 @@ router.post("/auth/logout", async(req, res) => {
 router.get("/auth/get-user-data", isLoggedIn, async(req, res) => {
     try {
         res.status(200).json({data : req.user})
+    } catch (error) {
+        res.status(400).json({error : error.message})
+    }
+})
+
+
+router.patch("/auth/change-password", isLoggedIn, async(req, res) => {
+    try {
+        const{oldPassword, newPassword} = req.body
+        const flag = await bcrypt.compare(oldPassword, req.user.password)
+
+        if(!flag)
+        {
+            throw new Error("Invalid Operation / Access Denied")
+        }
+        const isPasswordStrong = validator.isStrongPassword(newPassword)
+        if(!isPasswordStrong)
+        {
+            throw new Error("Please enter a strong password")
+        }
+
+        const newHashedPassword = await bcrypt.hash(newPassword, 10)
+
+        req.user.password = newHashedPassword
+        await req.user.save()
+        res.status(200).json({msg : "done"})
+
     } catch (error) {
         res.status(400).json({error : error.message})
     }

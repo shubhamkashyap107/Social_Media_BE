@@ -44,6 +44,19 @@ router.patch("/profile/:userId/profile-picture", isLoggedIn, async(req, res) => 
 
 
 
+router.patch("/profile/:userId/privacy", isLoggedIn, async(req, res) => {
+    try {
+        const{isPrivate} = req.body
+        // console.log(privacy)  
+        req.user.isPrivate = isPrivate
+        req.user.save()
+        res.status(200).json({msg : "done", data : req.user})
+    } catch (error) {
+        res.status(400).json({error : error.message})
+    }
+})
+
+
 
 
 
