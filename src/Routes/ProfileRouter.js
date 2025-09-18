@@ -57,6 +57,46 @@ router.patch("/profile/:userId/privacy", isLoggedIn, async(req, res) => {
 })
 
 
+router.get("/profile/:userId", isLoggedIn, async(req, res) => {
+    try {
+        const{userId} = req.params
+        const foundUser = await User.findById(userId).populate("posts")
+
+        if(!foundUser)
+        {
+            throw new Error("Account does not exist")
+        }
+
+        const {
+            firstName,
+            lastName,
+            username,
+            // mail,
+            // password,
+            // dateOfBirth,
+            // gender,
+            bio,
+            profilePicture,
+            posts,
+            followers,
+            following,
+            // blocked,
+            isPrivate
+            } = foundUser
+
+
+        if(foundUser.isPrivate)
+        {
+            res.status(200).json({msg : "done", data : {firstName, lastName, username, profilePicture, bio, posts : posts.length, followers : followers.length, following : following.length, isPrivate}})
+        }
+        else
+        {
+            res.status(200).json({msg : "done", data : {firstName, lastName, username, bio, profilePicture, posts, followers, following, isPrivate}})
+        }
+    } catch (error) {
+        
+    }
+})
 
 
 

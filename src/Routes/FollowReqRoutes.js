@@ -27,7 +27,7 @@ router.post("/follow-requests/:toUserId", isLoggedIn, async(req, res) => {
             }
         }
 
-        const foundUser = await User.findOne({_id : toUserId})
+        const foundUser = await User.findOne({_id : toUserId}).populate("posts")
         if (foundUser.blocked.some(id => id.equals(req.user._id))) {
             throw new Error("Invalid Operation");
         }
@@ -49,7 +49,7 @@ router.post("/follow-requests/:toUserId", isLoggedIn, async(req, res) => {
             foundUser.save()
             req.user.following.push(toUserId)
             req.user.save()
-            res.status(201).json({msg : `Now Following, ${foundUser.username}`})
+            res.status(201).json({msg : `Now Following, ${foundUser.username}`, data : req.user, toUserData : foundUser})
         }
 
     } catch (error) {
@@ -177,7 +177,7 @@ router.patch("/follow-requests/unblock/:userId", isLoggedIn, async(req, res) => 
 router.patch("/follow-requests/unfollow/:id", isLoggedIn, async(req, res) => {
     try {
         const{id} = req.params
-        const foundUser = await User.findById(id)
+        const foundUser = await User.findById(id).populate("posts")
         if(!foundUser)
         {
             throw new Error("User not found")
@@ -219,7 +219,7 @@ router.patch("/follow-requests/unfollow/:id", isLoggedIn, async(req, res) => {
             throw new Error("Invalid Operation")
         }
 
-        res.status(200).json({msg : "done"})
+        res.status(200).json({msg : "done", data : req.user, toUserData : foundUser})
     } catch (error) {
         res.status(400).json({error : error.message})
     }
